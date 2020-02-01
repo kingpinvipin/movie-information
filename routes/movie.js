@@ -7,7 +7,7 @@ var router = express.Router();
 router.get('/', function(req, res, next) {
   res.render('home');
 });
-
+ 
 router.get('/search/:movie/:releaseyear?',function(req,res){
   MongoClient.connect(url,function(err,db){
     if(err) throw err ;
@@ -25,19 +25,19 @@ router.get('/search/:movie/:releaseyear?',function(req,res){
 
 router.post('/search-result',function(req,res){
   MongoClient.connect(url,function(err,db){
-    if(err) throw err ; 
+    if(err) throw err ;
     var dbo = db.db("mydb");
     var query = {movie:req.body.inputmovie,releaseyear:parseInt(req.body.inputyear)};
     dbo.collection('movies').find(query).toArray(function(err,movie){
       if(err) throw err ;
       res.render('result',{movie:movie});
       db.close();
-    }); 
+    });
   });
 });
 
 router.get('/favourites',function(req,res){
-  MongoClient.connect(url,function(err,db){ 
+  MongoClient.connect(url,function(err,db){
     if(err) throw err ;
     var dbo = db.db("mydb");
     dbo.collection('favourites').find().toArray(function(err,result){
@@ -135,16 +135,13 @@ router.get('/sort/:type/:aname/:actor?',function(req,res){
     var type = req.params.type.slice(1),aname = req.params.aname.slice(1) ;
     var query = {actor:req.params.aname.slice(1)};
     var actor = 1 ;
-    if(!req.params.actor) { 
+    if(!req.params.actor) {
       query = {actress:req.params.aname.slice(1)} ;
       actor = 0 ;
     }
     var sort_style ;
     if(type == 'rating') sort_style = {'rating':-1};
     else sort_style = {'releaseyear':-1};
-    console.log(type);
-    console.log(query);
-    console.log(sort_style);
     dbo.collection('movies').find(query).sort(sort_style).toArray(function(error,result){
       if(error) throw error ;
       res.render('amlist',{result:result,aname:aname,actor:actor});
@@ -153,5 +150,4 @@ router.get('/sort/:type/:aname/:actor?',function(req,res){
   });
 });
 
-module.exports = router;  
-  
+module.exports = router;
